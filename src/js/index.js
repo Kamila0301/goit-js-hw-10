@@ -33,7 +33,7 @@ fetchBreeds()
   })
 
   .catch(error => {
-    messageError(error);
+    return messageError(error);
   });
 
 selectorEl.addEventListener('change', onSelectBreed);
@@ -64,12 +64,12 @@ function onSelectBreed(event) {
     })
 
     .catch(error => {
-      messageError(error);
+      return messageError(error);
     });
 }
 
 function messageError(error) {
-  selectorEl.classList.remove('is-hidden');
+  selectorEl.classList.add('is-hidden');
   loader.classList.replace('loader', 'is-hidden');
 
   Notify.failure(
