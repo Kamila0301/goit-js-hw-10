@@ -4,66 +4,72 @@ axios.defaults.headers.common['x-api-key'] =
   'live_zgrBRHJPoOskAz19LDGmRBL8gH23xZ6nhRobMoU5ML5jbT82vMktYFIz1pij94iq';
 
 import { fetchBreeds, fetchCatByBreed } from './cat-api';
-import './styles.css';
+import '../css/styles.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SlimSelect from 'slim-select';
 import 'slim-select/dist/slimselect.css';
 
 const loader = document.querySelector('.loader');
 const error = document.querySelector('.error');
-const selector = document.querySelector('.breed-select');
-const divCatInfo = document.querySelector('.cat-info');
+const selectorEl = document.querySelector('.breed-select');
+const infoEl = document.querySelector('.cat-info');
 
 loader.classList.replace('loader', 'is-hidden');
 error.classList.add('is-hidden');
-divCatInfo.classList.add('is-hidden');
+infoEl.classList.add('is-hidden');
 
-let arrBrId = [];
 fetchBreeds()
   .then(data => {
     data.forEach(element => {
-      arrBrId.push({ text: element.name, value: element.id });
+      const option = document.createElement('option');
+      option.value = element.id;
+      option.textContent = element.name;
+      selectorEl.appendChild(option);
     });
 
     new SlimSelect({
-      select: selector,
-      data: arrBrId,
+      select: selectorEl,
     });
   })
-  .catch(onFetchError);
 
-selector.addEventListener('change', onSelectBreed);
+  .catch(error => {
+    messageError(error);
+  });
+
+selectorEl.addEventListener('change', onSelectBreed);
 
 function onSelectBreed(event) {
   loader.classList.replace('is-hidden', 'loader');
-  selector.classList.add('is-hidden');
-  divCatInfo.classList.add('is-hidden');
+  selectorEl.classList.add('is-hidden');
+  infoEl.classList.add('is-hidden');
 
   const breedId = event.currentTarget.value;
   fetchCatByBreed(breedId)
     .then(data => {
       loader.classList.replace('loader', 'is-hidden');
-      selector.classList.remove('is-hidden');
+      selectorEl.classList.remove('is-hidden');
       const { url, breeds } = data[0];
 
-      divCatInfo.innerHTML = `
+      infoEl.innerHTML = `
       <div class="box-img">
-      <img src="${url}" alt="${breeds[0].name}" width="400"/>
+      <img src="${url}" alt="${breeds[0].name}" width="500"/>
       </div>
       <div class="box">
       <h1>${breeds[0].name}</h1>
-      <p>${breeds[0].description}</p>
-      <p>
-      <b>Temperament:</b>
+      <p>Description: ${breeds[0].description}</p>
+      <p>Temperament: 
       ${breeds[0].temperament}</p>
       </div>`;
-      divCatInfo.classList.remove('is-hidden');
+      infoEl.classList.remove('is-hidden');
     })
-    .catch(onFetchError);
+
+    .catch(error => {
+      messageError(error);
+    });
 }
 
-function onFetchError(error) {
-  selector.classList.remove('is-hidden');
+function messageError(error) {
+  selectorEl.classList.remove('is-hidden');
   loader.classList.replace('loader', 'is-hidden');
 
   Notify.failure(
