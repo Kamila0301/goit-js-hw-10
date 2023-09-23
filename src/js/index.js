@@ -51,10 +51,10 @@ function onSelectBreed(event) {
       const { url, breeds } = data[0];
 
       infoEl.innerHTML = `
-      <div class="box-img">
+      <div>
       <img src="${url}" alt="${breeds[0].name}" width="500"/>
       </div>
-      <div class="box">
+      <div>
       <h1>${breeds[0].name}</h1>
       <p>Description: ${breeds[0].description}</p>
       <p>Temperament: 
